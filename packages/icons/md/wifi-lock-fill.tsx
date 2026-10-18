@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import type { SVGProps } from "react";
+const SvgWifiLockFill = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+    <path d="M480-120 0-600q99-94 221-147t259-53 259 53 221 147L827-467q-17-6-35-9t-36-2q-85 2-145 62t-62 145q-1 18 2 36t9 35zm202 0q-17 0-28.5-11.5T642-160v-118q0-17 11.5-28.5T682-318h1v-39q0-34 24-58t58-24 58 24 24 58v39h1q17 0 28.5 11.5T888-278v118q0 17-11.5 28.5T848-120zm41-198h84v-39q0-19-11.5-30.5T765-399t-30.5 11.5T723-357z" />
+  </svg>
+);
+export default SvgWifiLockFill;

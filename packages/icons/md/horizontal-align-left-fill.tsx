@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import type { SVGProps } from "react";
+const SvgHorizontalAlignLeftFill = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+    <path d="M120-160v-640h60v640zm310-130L240-480l194-194 43 43-121 121h484v60H356l117 117z" />
+  </svg>
+);
+export default SvgHorizontalAlignLeftFill;

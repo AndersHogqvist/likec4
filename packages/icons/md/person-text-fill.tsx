@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import type { SVGProps } from "react";
+const SvgPersonTextFill = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+    <path d="M680-240v-60h200v60zm-80-210v-60h280v60zm-80-210v-60h360v60zM235.5-517.5Q202-551 202-602t33.5-84.5T320-720t84.5 33.5T438-602t-33.5 84.5T320-484t-84.5-33.5M80-240v-66q0-19 9-36t24-24q45-32 98.5-47.5T320-429t108 17 99 46q14 10 23.5 25.5T560-306v66z" />
+  </svg>
+);
+export default SvgPersonTextFill;

@@ -1,6 +1,6 @@
 import { fdir } from 'fdir'
 import { existsSync, readFileSync } from 'node:fs'
-import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { copyFile, cp, mkdir, rm, writeFile } from 'node:fs/promises'
 import * as path from 'path'
 import { $ } from 'zx'
 
@@ -212,6 +212,36 @@ for (const svg of bootstrapSvgs) {
 console.info('bootstrap-icons - OK')
 
 // -----------------------------------------------------------
+// -------------------- material symbols --------------------
+
+if (!existsSync('.tmp/material-symbols.zip')) {
+  console.info('Fetching Material Symbols...')
+  await $`curl -L -o .tmp/material-symbols.zip https://github.com/marella/material-symbols/archive/refs/heads/main.zip`
+}
+await rm('.tmp/material-symbols', { force: true, recursive: true })
+await $`unzip .tmp/material-symbols.zip -d .tmp/material-symbols`
+await mkdir('.tmp/src/md', { recursive: true })
+
+const materialSymbolsLicense = '.tmp/material-symbols/material-symbols-main/LICENSE'
+await cp(materialSymbolsLicense, 'MATERIAL-SYMBOLS-LICENSE')
+
+const materialSymbols = new fdir()
+  .glob('**/*.svg')
+  .withFullPaths()
+  .crawl('.tmp/material-symbols/material-symbols-main/svg/400/outlined')
+  .sync()
+const materialSymbolNames = new Set()
+for (const svg of materialSymbols) {
+  const name = path.basename(svg).replaceAll('_', '-')
+  if (materialSymbolNames.has(name)) {
+    throw new Error(`Duplicate Material Symbols name: ${name}`)
+  }
+  materialSymbolNames.add(name)
+  await copyFile(svg, path.join('.tmp/src/md', name))
+}
+console.info('Material Symbols - OK')
+
+// -----------------------------------------------------------
 // ------------------------ svg-logos ------------------------
 
 await rm('.tmp/svg-logos', { force: true, recursive: true })
@@ -249,7 +279,7 @@ console.info('svg-logos - OK')
 
 // ------------------------ Generate React components ------------------------
 
-await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech', 'bootstrap']}`
+await $`rm -r -f ${['aws', 'azure', 'gcp', 'tech', 'bootstrap', 'md']}`
 
 console.info('generating svg...')
 const opts = [
@@ -265,13 +295,13 @@ const opts = [
 await $`pnpx @svgr/cli ${opts} --out-dir . -- .tmp/src`
 console.info('generated svg - DONE')
 
-await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp .tmp/svg-logos .tmp/bootstrap`
+await $`rm -r -f .tmp/src .tmp/aws .tmp/azure .tmp/gcp .tmp/svg-logos .tmp/bootstrap .tmp/material-symbols`
 console.info('Cleaning up temp files - DONE')
 
 for (const fname of new fdir().glob('**/*.tsx').withFullPaths().crawl().sync()) {
   const input = readFileSync(fname, 'utf-8')
 
-  const output = `// @ts-nocheck \n\n` + input
+  const output = `// @ts-nocheck\n\n` + input
   await writeFile(fname, output)
 }
 

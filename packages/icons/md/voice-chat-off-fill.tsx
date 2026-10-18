@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import type { SVGProps } from "react";
+const SvgVoiceChatOffFill = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
+    <path d="M860-28 648-240H240L80-80v-728l-24-24 41-44L903-70zM670-530h40v-60h-40zm149 290L610-449v-221h-40v181l-70-70v-191h-40v152L178-880h642q23 0 41.5 18.5T880-820v520q0 23-17.5 41.5T819-240M500-388l-40-40v58h40zm-150-62h40v-48l-40-40zm-100-80h40v-60h-40z" />
+  </svg>
+);
+export default SvgVoiceChatOffFill;

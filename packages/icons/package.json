@@ -45,6 +45,13 @@
       "types": "./icon.d.ts",
       "default": "./gcp/*.js"
     },
+    "./md": {
+      "default": "./md/index.js"
+    },
+    "./md/*": {
+      "types": "./icon.d.ts",
+      "default": "./md/*.js"
+    },
     "./azure": {
       "default": "./azure/index.js"
     },
