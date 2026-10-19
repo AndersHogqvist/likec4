@@ -8,7 +8,7 @@ const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
 }).trim()
 
-const trackedEntries = execFileSync('git', ['ls-files', '-s'], {
+const trackedEntries = execFileSync('git', ['ls-files', '-s', '--', '.agents/skills/', '.claude/skills/', 'skills/'], {
   cwd: root,
   encoding: 'utf8',
 }).split('\n').filter(Boolean).map(line => {
