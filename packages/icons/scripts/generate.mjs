@@ -207,22 +207,26 @@ const entryPoints = [
   ...indexFiles,
 ]
 
-await build({
-  entryPoints,
-  sourceRoot: '.',
-  outdir: '.',
-  minify: true,
-  tsconfigRaw: {
-    compilerOptions: {
-      module: 'esnext',
-      target: 'esnext',
-      verbatimModuleSyntax: true,
-      jsx: 'react-jsx',
+const batchSize = 256
+for (let start = 0; start < entryPoints.length; start += batchSize) {
+  await build({
+    entryPoints: entryPoints.slice(start, start + batchSize),
+    sourceRoot: '.',
+    outbase: '.',
+    outdir: '.',
+    minify: true,
+    tsconfigRaw: {
+      compilerOptions: {
+        module: 'esnext',
+        target: 'esnext',
+        verbatimModuleSyntax: true,
+        jsx: 'react-jsx',
+      },
     },
-  },
-  jsxDev: false,
-  format: 'esm',
-})
+    jsxDev: false,
+    format: 'esm',
+  })
+}
 
 console.info('Creating index.d.ts')
 
