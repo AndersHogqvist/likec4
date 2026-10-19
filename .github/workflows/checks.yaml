@@ -158,7 +158,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: ⚙️ generate
-        run: pnpm ci:generate
+        run: pnpm ci:generate --concurrency=2 --ui=stream
 
       - name: 🔬 test
         env:
