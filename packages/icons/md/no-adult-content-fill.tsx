@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgNoAdultContentFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M480-80q-85 0-158-30.5T195-195t-84.5-127T80-480q0-84 30.5-157T195-764t127-85 158-31q84 0 157 31t127 85 85 127 31 157q0 85-31 158t-85 127-127 84.5T480-80m0-60q62 0 117-21t100-59L557-360h85l98 98q38-45 59-100.5T820-480q0-140-100-240T480-820q-62 0-117.5 21T262-740l141 140h-85l-98-98q-38 45-59 100.5T140-480q0 140 100 240t240 100M210-405l56-75-56-75h48l32 43 33-43h47l-56 75 56 75h-47l-33-43-32 43zm190 0 56-75-56-75h48l32 43 33-43h47l-56 75 56 75h-47l-33-43-32 43zm190 0 56-75-56-75h48l32 43 33-43h47l-56 75 56 75h-47l-33-43-32 43z" />
-  </svg>
-);
-export default SvgNoAdultContentFill;

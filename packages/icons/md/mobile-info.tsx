@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgMobileInfo = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M260-40q-24.75 0-42.37-17.63Q200-75.25 200-100v-760q0-24 18-42t42-18h438q24.75 0 42.38 17.62Q758-884.75 758-860v150q18 3 30 16.95 12 13.96 12 31.63V-587q0 19-12 33t-30 17v437q0 24.75-17.62 42.37Q722.75-40 698-40zm0-60h438v-760H260zm0 0v-760zm190-198h60v-256h-60zm53.5-309.48q9.5-9.48 9.5-23.5t-10-23.52-24-9.5-23 9.48-9 23.5 9.48 23.52 23.5 9.5 23.52-9.48" />
-  </svg>
-);
-export default SvgMobileInfo;

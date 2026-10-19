@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgTextAdOffFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M210-290h374l-60-60H210zm0-160h214l-60-60H210zm0-160h54l-60-60h6zM813-61l-99-99H140q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h20l60 60h-86L26-848l43-43 787 787zm52-120L596-450h154v-60H536L436-610h152v-60H376L246-800h574q24 0 42 18t18 42v520q0 11-4 21t-11 18" />
-  </svg>
-);
-export default SvgTextAdOffFill;

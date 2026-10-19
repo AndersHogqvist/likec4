@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgStylusFountainPenFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M307-326h346l87-357-230-210v225q14 8 23 22.06t9 30.94q0 25.27-18.22 43.14-18.22 17.86-44 17.86T436-571.86q-18-17.87-18-43.14 0-16.88 9-30.94T450-668v-225L220-683zM160-120l21.27-57.06Q189-199 207.84-212.5T250-226h460q23.32 0 42.16 13.5t26.57 35.44L800-120z" />
-  </svg>
-);
-export default SvgStylusFountainPenFill;

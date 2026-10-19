@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgSpeechToText2 = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M780-820v680zM300-80q-24.75 0-42.37-17.63Q240-115.25 240-140v-110h60v110h480v-680H440v-60h340q24.75 0 42.38 17.62Q840-844.75 840-820v680q0 24.75-17.62 42.37Q804.75-80 780-80zm-30-490q-29 0-49.5-20.5T200-640v-160q0-29 20.5-49.5t49.93-20.5q28.57 0 49.07 20.5T340-800v160q0 29-20.56 49.5T270-570m-30 240v-102q-78-11-129-70.75Q60-562.49 60-640h60q0 63 43.5 106.5T270-490t106.5-43.75T420-640h60q0 78-51 137.5T300-432v102zm160 80h280v-60H400zm0-120h200v-60H400z" />
-  </svg>
-);
-export default SvgSpeechToText2;

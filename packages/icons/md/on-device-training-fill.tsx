@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgOnDeviceTrainingFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M450-300v-20h60v20zm0-40v-37q-17-11-28.5-27T410-440q0-29 20.5-49.5T480-510t49.5 20.5T550-440q0 20-11.5 36T510-377v37zm189 2-28-28q10-17 14.5-35.5T630-440t-4.5-38.5T611-514l28-28q15 23 23 49t8 53-8 53-23 49m-318 0q-15-23-23-49t-8-53q0-81 59-135.5T490-630v-38l65 58-65 58v-38q-66 0-113 43t-47 107q0 20 4.5 38.5T349-366zM220-40q-25 0-42.5-17.5T160-100v-760q0-25 17.5-42.5T220-920h520q25 0 42.5 17.5T800-860v760q0 25-17.5 42.5T740-40zm0-150h520v-580H220z" />
-  </svg>
-);
-export default SvgOnDeviceTrainingFill;

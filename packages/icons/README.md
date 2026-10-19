@@ -30,7 +30,8 @@ import Home from '@likec4/icons/md/home'
 ```
 
 Material Symbols are sourced from [marella/material-symbols](https://github.com/marella/material-symbols)
-in the outlined style and are provided under the Apache 2.0 license; see
+through the pinned `@material-symbols/svg-400` package. Run `pnpm generate` after checkout to create
+the ignored `md/` components. The icons use the outlined style and are provided under the Apache 2.0 license; see
 [`MATERIAL-SYMBOLS-LICENSE`](./MATERIAL-SYMBOLS-LICENSE).
 
 MIT License

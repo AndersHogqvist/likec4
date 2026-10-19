@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgGoogleHomeDevicesFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M322-120v-87H132q-24 0-42-18.5T72-268v-512q0-24 18-42t42-18h680q24 0 42 18t18 42v125h-60v-125H132v513h348v147zm326.88-237q26.88-27 65-27T779-357.12t27 65T779.12-227t-65 27T649-226.88t-27-65T648.88-357m198.88-268Q864-625 876-613t12 28.39v424.22Q888-144 876-132t-28.24 12H580.24Q564-120 552-132t-12-28.39v-424.22Q540-601 552-613t28.24-12zM672-568q-18 18-18 42t18 42 42 18 42-18 18-42-18-42-42-18-42 18m138.5 372.5Q848-233 848-292t-37.5-96.5T714-426t-96.5 37.5T580-292t37.5 96.5T714-158t96.5-37.5" />
-  </svg>
-);
-export default SvgGoogleHomeDevicesFill;

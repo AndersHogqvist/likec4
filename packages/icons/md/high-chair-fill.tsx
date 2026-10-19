@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgHighChairFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="m240-120 41-441-34-196q-4-24 12.5-53.5T330-840q57 0 101 35.5t54 92.5l20 119h185q13 0 21.5 8.5T720-563t-8.5 21.5T690-533h-51l38 413h-60l-8-83H308l-8 83zm73-143h291l-10-105H323zm15-165h260l-9-105H338z" />
-  </svg>
-);
-export default SvgHighChairFill;

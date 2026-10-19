@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgAssignmentAddFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M504.5-807.5Q515-818 515-832t-10.5-24.5T480-867t-24.5 10.5T445-832t10.5 24.5T480-797t24.5-10.5M733-41q-78 0-133-55.5T545-228q0-78 55-133.5T733-417q77 0 132.5 55.5T921-228q0 76-55.5 131.5T733-41m-15-60h33v-110h110v-33H751v-110h-33v110H608v33h110zM280-620h400v-60H280zm230 500H180q-25 0-42.5-17.5T120-180v-600q0-25 17.5-42.5T180-840h205q5-35 32-57.5t63-22.5 63 22.5 32 57.5h205q25 0 42.5 17.5T840-780v329q-25-13-52-19t-55-6q-14 0-27 1.5t-26 4.5v-40H280v60h344q-36 18-64.5 46.5T513-340H280v60h211q-3 13-4.5 26t-1.5 27q0 29 6 55t19 52" />
-  </svg>
-);
-export default SvgAssignmentAddFill;

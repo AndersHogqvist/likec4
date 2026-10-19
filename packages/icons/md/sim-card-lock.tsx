@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgSimCardLock = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M220-80q-24 0-42-18t-18-42v-501l239-239h341q24 0 42 18t18 42v680q0 24-18 42t-42 18zm0-60h520v-680H426L220-613.88zm0 0h520zm180-185h160q14 0 24.5-10.5T595-360v-120q0-14-11.5-24.5T555-515v-45q0-30.94-22.04-52.97-22.05-22.03-53-22.03Q449-635 427-612.97T405-560v45q-17 0-28.5 10.5T365-480v120q0 14 10.5 24.5T400-325m35-190v-44.91Q435-579 447.91-592t32-13T512-592.06q13 12.93 13 32.06v45z" />
-  </svg>
-);
-export default SvgSimCardLock;

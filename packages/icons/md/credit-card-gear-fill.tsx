@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgCreditCardGearFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="m685-63-5-48q-21-6-40-17t-35-26l-42 20-35-54 38-30q-6-20-6-41.5t6-41.5l-38-30 35-55 42 20q17-14 35.5-25t39.5-17l5-49h60l6 49q21 6 39.5 17t35.5 25l42-20 35 55-38 30q6 20 6 41.5t-6 41.5l38 30-35 54-42-20q-16 15-35 26t-40 17l-6 48zm102-125q30-30 30-72t-30-72-72-30-72 30-30 72 30 72 72 30 72-30m-647 28q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v253q-14-10-29-18t-31-15v-111H140v129h435q-63 37-101 100.5T436-260q0 26 4.5 51.5T454-160z" />
-  </svg>
-);
-export default SvgCreditCardGearFill;

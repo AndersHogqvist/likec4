@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgMoreFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M350-160q-14 0-27-6.5T302-184L80-480l221-296q8-11 21-17.5t27-6.5h472q25 0 42.5 17.5T881-740v520q0 25-17.5 42.5T821-160zm74-291q12-12 12-29t-12-29-29-12-29 12-12 29 12 29 29 12 29-12m152 0q12-12 12-29t-12-29-29-12-29 12-12 29 12 29 29 12 29-12m152 0q12-12 12-29t-12-29-29-12-29 12-12 29 12 29 29 12 29-12" />
-  </svg>
-);
-export default SvgMoreFill;

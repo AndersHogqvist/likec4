@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgDeviceBand = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M383-80q-24 0-42-18t-18-42v-474h-10q-12 0-21-9t-9-21v-42q0-12 9-21t21-9h10v-104q0-24 18-42t42-18h195q24 0 42 18t18 42v104h11q12.75 0 21.38 9 8.62 9 8.62 21v42q0 12-8.62 21-8.63 9-21.38 9h-11v474q0 24-18 42t-42 18zm0-555v495h195v-495zm0-60h195v-125H383zm0 60h195zm0-60h195z" />
-  </svg>
-);
-export default SvgDeviceBand;

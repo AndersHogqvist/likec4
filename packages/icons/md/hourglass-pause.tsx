@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgHourglassPause = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M160-80v-60h88v-127q0-71 40-129t106-84q-66-27-106-85t-40-129v-126h-88v-60h640v60h-88v126q0 71-40 129t-106 85q12 5 26.5 12.5T617-452q-10 5-24 14.5T565-416q-19-11-40.5-16.5T480-438q-72 0-122 49.5T308-267v127h189q7 17 15 31.5T531-80zm442-492q50-50 50-122v-126H308v126q0 72 50 122t122 50 122-50m163 419 35 1v-156h-35zm-105 0h35v-155h-35zm-64 57.6q-56-55.4-56-134T596-364t134-56 134 55.87q56 55.86 56 135.13 0 78.43-56 133.72Q808-40 730-40T596-95.4M480-820" />
-  </svg>
-);
-export default SvgHourglassPause;

@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgProductionQuantityLimitsFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M456-593.78q-10-9.77-10-24.22t10-24.22q10-9.78 24-9.78t24 9.78q10 9.77 10 24.22t-10 24.22Q494-584 480-584t-24-9.78M450-720v-200h60v200zM239-101.21q-21-21.21-21-51T239.21-203t51-21T341-202.79t21 51T340.79-101t-51 21T239-101.21m404 0q-21-21.21-21-51T643.21-203t51-21T745-202.79t21 51T744.79-101t-51 21T643-101.21M62-820v-60h116l170 364h287.71L796-796h67L701-493q-11 19-28.56 30.5T634-451H331l-56 104h491v60H284q-37.66 0-57.33-30T224-378l64-118-148-324z" />
-  </svg>
-);
-export default SvgProductionQuantityLimitsFill;

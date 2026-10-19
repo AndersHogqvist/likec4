@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgBucketCheckFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M260-120q-26.35 0-45.68-16.5Q195-153 191-179l-71-496h123v-105q0-24.75 17.63-42.38Q278.25-840 303-840h355q24.75 0 42.38 17.62Q718-804.75 718-780v105h123l-71 496q-4 26-23.5 42.5T701-120zm177-170 189-188-43-43-146 146-59-58-42 42zM303-675h355v-105H303z" />
-  </svg>
-);
-export default SvgBucketCheckFill;

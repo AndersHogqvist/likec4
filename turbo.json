@@ -23,6 +23,7 @@
       "dependsOn": ["^sources"]
     },
     "generate": {
+      "dependsOn": ["^generate"],
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "outputs": [],
     },

@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgVitalSignsFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M334-199q-13-9-18-23l-97-228H48v-60h213l102 241 187-467q5-14 18-23t29-9 29 9 18 23l97 226h171v60H699L597-689 410-222q-5 14-18 23t-29 9-29-9" />
-  </svg>
-);
-export default SvgVitalSignsFill;

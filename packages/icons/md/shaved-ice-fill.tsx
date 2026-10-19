@@ -1,9 +1,0 @@
-// @ts-nocheck
-
-import type { SVGProps } from "react";
-const SvgShavedIceFill = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" {...props}>
-    <path d="M318-120q-53 0-93.5-33T167-237l-47-149h720l-47 149q-17 51-57.5 84T642-120zM202-446q5-35 19-67.5t37-60.5q-8-11-12-25t-4-29q0-57 39.5-99t97.5-50q15-28 42-45.5t59-17.5 58.5 17.5T582-777q45 7 80 34.5t49 68.5l78-122 51 32-130 201q20 26 32 55.5t17 61.5zm146-149 132-43 132 43q17 6 32-4t15-29q0-34-23-59t-56-30l-36-5-18-31q-8-13-20-20.5t-26-7.5q-15 0-27.5 7.5T434-753l-18 31-35 5q-35 5-57.5 30T301-628q0 19 15 29t32 4" />
-  </svg>
-);
-export default SvgShavedIceFill;
