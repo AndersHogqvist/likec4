@@ -151,6 +151,8 @@ function makeEdgeModifier(
   edge: Types.AnyEdge,
   sourceRect: Rect,
   targetRect: Rect,
+  sourceNode: BBox,
+  targetNode: BBox,
   isEndpointResized: () => boolean,
 ): EdgeModifier {
   return (edgeLookup) => {
@@ -178,6 +180,12 @@ function makeEdgeModifier(
         x: Math.trunc(x + sourceDiff.x * (1 - t) + targetDiff.x * t),
         y: Math.trunc(y + sourceDiff.y * (1 - t) + targetDiff.y * t),
       })
+      const sourceCenter = BBox.center(sourceNode)
+      const targetCenter = BBox.center(targetNode)
+      const routeMidpoint = {
+        x: Math.trunc((sourceCenter.x + sourceDiff.x + targetCenter.x + targetDiff.x) / 2),
+        y: Math.trunc((sourceCenter.y + sourceDiff.y + targetCenter.y + targetDiff.y) / 2),
+      }
 
       return {
         id: edge.id,
@@ -190,7 +198,7 @@ function makeEdgeModifier(
           })
           draft.data.controlPoints = controlPoints?.map(point =>
             movePoint(point.x, point.y, fraction(point.x, point.y))
-          ) ?? null
+          ) ?? (edge.type === 'relationship' ? [routeMidpoint] : null)
           if (edge.data.labelBBox) {
             const label = edge.data.labelBBox
             const moved = movePoint(label.x, label.y, fraction(label.x + label.width / 2, label.y + label.height / 2))
@@ -428,7 +436,17 @@ export function createLayoutConstraints(
     if (isSourceMoving && isTargetMoving) {
       const sourceRect = nonNullable(findMovingAncestor(edge.source), 'Moving source should be found')
       const targetRect = nonNullable(findMovingAncestor(edge.target), 'Moving target should be found')
-      edgeModifiers.set(edge, makeEdgeModifier(edge, sourceRect, targetRect, isEndpointResized))
+      edgeModifiers.set(
+        edge,
+        makeEdgeModifier(
+          edge,
+          sourceRect,
+          targetRect,
+          nonNullable(initialNodeRects.get(edge.source), 'Source node should be found'),
+          nonNullable(initialNodeRects.get(edge.target), 'Target node should be found'),
+          isEndpointResized,
+        ),
+      )
       continue
     }
 
