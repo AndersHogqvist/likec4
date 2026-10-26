@@ -44,7 +44,7 @@ export type DrawnEdge = {
   readonly segments: ReadonlyArray<Segment>
 }
 
-const NODE_MARGIN = 6
+export const NODE_MARGIN = 6
 
 const catmullRom = d3line<XYPosition>()
   .curve(curveCatmullRomOpen.alpha(0.7))

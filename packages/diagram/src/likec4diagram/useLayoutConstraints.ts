@@ -17,7 +17,14 @@ import { useDiagram } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { bezierControlPoints, leafNodeRects, nodeToRect } from '../utils/xyflow'
+import { NODE_MARGIN } from '../utils/edge-path'
+import {
+  bezierControlPoints,
+  getNodeIntersectionFromCenterToPoint,
+  isLeafNodeType,
+  leafNodeRects,
+  nodeToRect,
+} from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -153,6 +160,7 @@ function makeEdgeModifier(
   targetRect: Rect,
   sourceNode: BBox,
   targetNode: BBox,
+  otherNodeRects: () => BBox[],
   isEndpointResized: () => boolean,
 ): EdgeModifier {
   return (edgeLookup) => {
@@ -180,28 +188,54 @@ function makeEdgeModifier(
         x: Math.trunc(x + sourceDiff.x * (1 - t) + targetDiff.x * t),
         y: Math.trunc(y + sourceDiff.y * (1 - t) + targetDiff.y * t),
       })
-      const sourceCenter = BBox.center(sourceNode)
-      const targetCenter = BBox.center(targetNode)
-      const routeMidpoint = {
-        x: Math.trunc((sourceCenter.x + sourceDiff.x + targetCenter.x + targetDiff.x) / 2),
-        y: Math.trunc((sourceCenter.y + sourceDiff.y + targetCenter.y + targetDiff.y) / 2),
-      }
-
+      const movedSourceNode = { ...sourceNode, x: sourceNode.x + sourceDiff.x, y: sourceNode.y + sourceDiff.y }
+      const movedTargetNode = { ...targetNode, x: targetNode.x + targetDiff.x, y: targetNode.y + targetDiff.y }
+      const sourceCenter = BBox.center(movedSourceNode)
+      const targetCenter = BBox.center(movedTargetNode)
+      const canReanchor = edge.type === 'relationship' && !controlPoints &&
+        (sourceCenter.x !== targetCenter.x || sourceCenter.y !== targetCenter.y)
+      const start = canReanchor
+        ? getNodeIntersectionFromCenterToPoint(movedSourceNode, targetCenter, NODE_MARGIN)
+        : null
+      const end = canReanchor
+        ? getNodeIntersectionFromCenterToPoint(movedTargetNode, sourceCenter, NODE_MARGIN)
+        : null
+      const directRoute = start && end &&
+        otherNodeRects().every(node =>
+          !BBox.intersects(BBox.expand(BBox.fromPoints([[start.x, start.y], [end.x, end.y]]), NODE_MARGIN), node)
+        )
       return {
         id: edge.id,
         type: 'replace',
         item: produce(current, draft => {
-          draft.data.points = map(points, ([x, y], index) => {
+          const movedPoints = map(points, ([x, y], index) => {
             const t = index === 0 ? 0 : index === points.length - 1 ? 1 : fraction(x, y)
             const moved = movePoint(x, y, t)
             return [moved.x, moved.y] satisfies [number, number]
           })
+          if (start && end) {
+            movedPoints[0] = [start.x, start.y]
+            movedPoints[movedPoints.length - 1] = [end.x, end.y]
+          }
+          draft.data.points = directRoute && start && end
+            ? [
+              [start.x, start.y],
+              [Math.trunc((2 * start.x + end.x) / 3), Math.trunc((2 * start.y + end.y) / 3)],
+              [Math.trunc((start.x + 2 * end.x) / 3), Math.trunc((start.y + 2 * end.y) / 3)],
+              [end.x, end.y],
+            ] satisfies NonEmptyArray<[number, number]>
+            : movedPoints
           draft.data.controlPoints = controlPoints?.map(point =>
             movePoint(point.x, point.y, fraction(point.x, point.y))
-          ) ?? (edge.type === 'relationship' ? [routeMidpoint] : null)
+          ) ?? null
           if (edge.data.labelBBox) {
             const label = edge.data.labelBBox
-            const moved = movePoint(label.x, label.y, fraction(label.x + label.width / 2, label.y + label.height / 2))
+            const moved = directRoute && start && end && !edge.data.isLabelCustomized
+              ? {
+                x: Math.trunc((start.x + end.x - label.width) / 2),
+                y: Math.trunc((start.y + end.y - label.height) / 2),
+              }
+              : movePoint(label.x, label.y, fraction(label.x + label.width / 2, label.y + label.height / 2))
             draft.data.labelBBox ??= label
             draft.data.labelBBox.x = moved.x
             draft.data.labelBBox.y = moved.y
@@ -417,6 +451,16 @@ export function createLayoutConstraints(
     return null
   }
 
+  const otherNodeRects = (edge: Types.AnyEdge): BBox[] =>
+    [...nodeLookup].flatMap(([id, node]) => {
+      if (id === edge.source || id === edge.target || !isLeafNodeType(node.type)) {
+        return []
+      }
+      const initial = nonNullable(initialNodeRects.get(id), `Node ${id} not found`)
+      const diff = findMovingAncestor(id)?.diff ?? { x: 0, y: 0 }
+      return [{ ...initial, x: initial.x + diff.x, y: initial.y + diff.y }]
+    })
+
   // moving nodes may have nested nodes as well
   const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
 
@@ -444,6 +488,7 @@ export function createLayoutConstraints(
           targetRect,
           nonNullable(initialNodeRects.get(edge.source), 'Source node should be found'),
           nonNullable(initialNodeRects.get(edge.target), 'Target node should be found'),
+          () => otherNodeRects(edge),
           isEndpointResized,
         ),
       )
