@@ -3,6 +3,7 @@ import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it, vi } from 'vitest'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import type { XYStoreApi } from '../hooks/useXYFlow'
+import { editedEdgePath, layoutedEdgePath } from '../utils/edge-path'
 import type { Types } from './types'
 import { createLayoutConstraints } from './useLayoutConstraints'
 
@@ -270,6 +271,39 @@ describe('createLayoutConstraints.resize', () => {
 })
 
 describe('createLayoutConstraints with connected nodes', () => {
+  it('reanchors an unedited edge to the facing sides after selected nodes align', () => {
+    const source = { id: 'a', x: 0, y: 200, width: 100, height: 60 }
+    const target = { id: 'b', x: 300, y: 0, width: 100, height: 60 }
+    const store = fakeStore([source, target], [{
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [[80, 200], [130, 150], [250, 90], [320, 60]] satisfies NonEmptyArray<Point>,
+        controlPoints: null,
+        labelBBox: null,
+        dir: 'forward',
+      },
+    }])
+    const constraints = createLayoutConstraints(store.api, ['a', 'b'], 'spline')
+
+    store.moveNode('a', 0, 0)
+    constraints.rects.get('a')!.positionAbsolute = { x: 0, y: 0 }
+    constraints.updateXYFlow()
+
+    const updated = store.edgeAfterDrag('a-b').data
+    const endpoints = {
+      source: { center: { x: 50, y: 30 }, node: { x: 0, y: 0, width: 100, height: 60 } },
+      target: { center: { x: 350, y: 30 }, node: target },
+    }
+    const path = updated.controlPoints
+      ? editedEdgePath({ ...endpoints, controlPoints: updated.controlPoints, routing: 'spline' })
+      : layoutedEdgePath({ ...endpoints, points: updated.points, routing: 'spline' })
+
+    expect(path.d).toMatch(/^M106,30/)
+    expect(path.d).toMatch(/294,30$/)
+  })
+
   it('moves each end of the edge with its node when selected nodes move by different amounts', () => {
     const edge: MockEdge = {
       id: 'a-b',
