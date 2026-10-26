@@ -268,3 +268,75 @@ describe('createLayoutConstraints.resize', () => {
     ])
   })
 })
+
+describe('createLayoutConstraints with connected nodes', () => {
+  it('moves each end of the edge with its node when selected nodes move by different amounts', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [[100, 25], [130, 25], [170, 225], [200, 225]],
+        controlPoints: null,
+        labelBBox: null,
+      },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('b')!.positionAbsolute = { x: 200, y: 0 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points.0', [100, 25])
+    expect(changes?.[0]).toHaveProperty('item.data.points.3', [200, 25])
+  })
+
+  it('keeps the target end in place when only the selected source moves', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: { points: [[100, 25], [130, 25], [170, 225], [200, 225]], controlPoints: null, labelBBox: null },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('a')!.positionAbsolute = { x: 40, y: 0 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points.0', [140, 25])
+    expect(changes?.[0]).toHaveProperty('item.data.points.3', [200, 225])
+  })
+
+  it('translates the full edge when both selected nodes move together', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: { points: [[100, 25], [130, 25], [170, 225], [200, 225]], controlPoints: null, labelBBox: null },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('a')!.positionAbsolute = { x: 40, y: 10 }
+    constraints.rects.get('b')!.positionAbsolute = { x: 240, y: 210 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points', [[140, 35], [170, 35], [210, 235], [240, 235]])
+  })
+})

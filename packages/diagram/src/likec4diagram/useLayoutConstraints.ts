@@ -17,7 +17,7 @@ import { useDiagram } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { leafNodeRects, nodeToRect, bezierControlPoints } from '../utils/xyflow'
+import { bezierControlPoints, leafNodeRects, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -149,7 +149,8 @@ type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange
  */
 function makeEdgeModifier(
   edge: Types.AnyEdge,
-  anchor: Rect,
+  sourceRect: Rect,
+  targetRect: Rect,
   isEndpointResized: () => boolean,
 ): EdgeModifier {
   return (edgeLookup) => {
@@ -158,7 +159,50 @@ function makeEdgeModifier(
     const canDeriveControlPoints = edge.data.points.length >= 4 && (edge.data.points.length - 1) % 3 === 0
     const controlPoints = edge.data.controlPoints
       ?? (isEndpointResized() && canDeriveControlPoints ? bezierControlPoints(edge.data.points) : null)
-    const { x: dx, y: dy } = anchor.diff
+    const sourceDiff = sourceRect.diff
+    const targetDiff = targetRect.diff
+
+    if (sourceDiff.x !== targetDiff.x || sourceDiff.y !== targetDiff.y) {
+      const points = edge.data.points
+      const [startX, startY] = points[0]
+      const [endX, endY] = points.at(-1)!
+      const vx = endX - startX
+      const vy = endY - startY
+      const lengthSquared = vx * vx + vy * vy
+      const fraction = (x: number, y: number) =>
+        lengthSquared === 0 ? 0.5 : clamp(((x - startX) * vx + (y - startY) * vy) / lengthSquared, {
+          min: 0,
+          max: 1,
+        })
+      const movePoint = (x: number, y: number, t: number) => ({
+        x: Math.trunc(x + sourceDiff.x * (1 - t) + targetDiff.x * t),
+        y: Math.trunc(y + sourceDiff.y * (1 - t) + targetDiff.y * t),
+      })
+
+      return {
+        id: edge.id,
+        type: 'replace',
+        item: produce(current, draft => {
+          draft.data.points = map(points, ([x, y], index) => {
+            const t = index === 0 ? 0 : index === points.length - 1 ? 1 : fraction(x, y)
+            const moved = movePoint(x, y, t)
+            return [moved.x, moved.y] satisfies [number, number]
+          })
+          draft.data.controlPoints = controlPoints?.map(point =>
+            movePoint(point.x, point.y, fraction(point.x, point.y))
+          ) ?? null
+          if (edge.data.labelBBox) {
+            const label = edge.data.labelBBox
+            const moved = movePoint(label.x, label.y, fraction(label.x + label.width / 2, label.y + label.height / 2))
+            draft.data.labelBBox ??= label
+            draft.data.labelBBox.x = moved.x
+            draft.data.labelBBox.y = moved.y
+          }
+        }),
+      }
+    }
+
+    const { x: dx, y: dy } = sourceDiff
     if (dx === 0 && dy === 0) {
       const item = produce(current, draft => {
         draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
@@ -382,13 +426,9 @@ export function createLayoutConstraints(
 
     // We update edges, where both source and target are moving nodes
     if (isSourceMoving && isTargetMoving) {
-      // Find the anchor rectangle for the edge
-      let r = rects.get(edge.source)
-        ?? rects.get(edge.target)
-        ?? findMovingAncestor(edge.source)
-        ?? findMovingAncestor(edge.target)
-      invariant(!!r, 'At least one of the edge nodes should have a moving ancestor')
-      edgeModifiers.set(edge, makeEdgeModifier(edge, r, isEndpointResized))
+      const sourceRect = nonNullable(findMovingAncestor(edge.source), 'Moving source should be found')
+      const targetRect = nonNullable(findMovingAncestor(edge.target), 'Moving target should be found')
+      edgeModifiers.set(edge, makeEdgeModifier(edge, sourceRect, targetRect, isEndpointResized))
       continue
     }
 
