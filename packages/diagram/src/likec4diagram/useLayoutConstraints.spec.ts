@@ -3,6 +3,7 @@ import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it, vi } from 'vitest'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import type { XYStoreApi } from '../hooks/useXYFlow'
+import { editedEdgePath, layoutedEdgePath } from '../utils/edge-path'
 import type { Types } from './types'
 import { createLayoutConstraints } from './useLayoutConstraints'
 
@@ -266,5 +267,203 @@ describe('createLayoutConstraints.resize', () => {
         item: expect.objectContaining({ data: expect.objectContaining({ controlPoints: null }) }),
       }),
     ])
+  })
+})
+
+describe('createLayoutConstraints with connected nodes', () => {
+  it('keeps an orthogonal detour attached after alignment', () => {
+    const source = { id: 'a', x: 0, y: 200, width: 100, height: 60 }
+    const target = { id: 'b', x: 300, y: 0, width: 100, height: 60 }
+    const obstacle = { id: 'c', x: 150, y: 0, width: 100, height: 100 }
+    const store = fakeStore([source, target, obstacle], [{
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [
+          [50, 200],
+          [50, 150],
+          [50, 100],
+          [50, 50],
+          [130, 50],
+          [210, 50],
+          [300, 50],
+        ] satisfies NonEmptyArray<Point>,
+        controlPoints: null,
+        labelBBox: null,
+        dir: 'forward',
+      },
+    }])
+    const constraints = createLayoutConstraints(store.api, ['a', 'b'], 'ortho')
+
+    store.moveNode('a', 0, 0)
+    constraints.rects.get('a')!.positionAbsolute = { x: 0, y: 0 }
+    constraints.updateXYFlow()
+
+    const updated = store.edgeAfterDrag('a-b').data
+    const path = layoutedEdgePath({
+      source: { center: { x: 50, y: 30 }, node: { ...source, y: 0 } },
+      target: { center: { x: 350, y: 30 }, node: target },
+      points: updated.points,
+      routing: 'ortho',
+    })
+    expect(updated.controlPoints).toBeNull()
+    expect(path.segments[0]?.[0]).toEqual({ x: 50, y: -2 })
+    expect(path.segments.at(-1)?.[1]).toEqual({ x: 350, y: -2 })
+    expect(path.segments.every(([a, b]) => a.x === b.x || a.y === b.y)).toBe(true)
+    expect(path.segments.every(([a, b]) =>
+      !BBox.intersects(
+        BBox.expand(
+          BBox.fromPoints([
+            [a.x, a.y],
+            [b.x, b.y],
+          ]),
+          1,
+        ),
+        obstacle,
+      )
+    )).toBe(true)
+  })
+
+  it('keeps an existing detour clear of another node after alignment', () => {
+    const source = { id: 'a', x: 0, y: 200, width: 100, height: 60 }
+    const target = { id: 'b', x: 400, y: 0, width: 100, height: 60 }
+    const obstacle = { id: 'c', x: 200, y: 0, width: 100, height: 120 }
+    const store = fakeStore([source, target, obstacle], [{
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [
+          [80, 200],
+          [130, 150],
+          [180, -80],
+          [250, -80],
+          [320, -80],
+          [370, 20],
+          [420, 60],
+        ] satisfies NonEmptyArray<Point>,
+        controlPoints: null,
+        labelBBox: { x: 230, y: -90, width: 40, height: 16 },
+        dir: 'forward',
+      },
+    }])
+    const constraints = createLayoutConstraints(store.api, ['a', 'b'], 'spline')
+
+    store.moveNode('a', 0, 0)
+    constraints.rects.get('a')!.positionAbsolute = { x: 0, y: 0 }
+    constraints.updateXYFlow()
+
+    const updated = store.edgeAfterDrag('a-b').data
+    expect(updated.controlPoints).toBeNull()
+    expect(updated.points[0]).toEqual([106, 30])
+    expect(updated.points.at(-1)).toEqual([394, 30])
+    expect(updated.points[3]![1]).toBeLessThan(obstacle.y)
+    expect(Math.abs(updated.labelBBox!.y + 8 - updated.points[3]![1])).toBeLessThan(20)
+  })
+
+  it('reanchors an unedited edge to the facing sides after selected nodes align', () => {
+    const source = { id: 'a', x: 0, y: 200, width: 100, height: 60 }
+    const target = { id: 'b', x: 300, y: 0, width: 100, height: 60 }
+    const store = fakeStore([source, target], [{
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [[80, 200], [130, 150], [250, 90], [320, 60]] satisfies NonEmptyArray<Point>,
+        controlPoints: null,
+        labelBBox: { x: 180, y: 120, width: 40, height: 16 },
+        dir: 'forward',
+      },
+    }])
+    const constraints = createLayoutConstraints(store.api, ['a', 'b'], 'spline')
+
+    store.moveNode('a', 0, 0)
+    constraints.rects.get('a')!.positionAbsolute = { x: 0, y: 0 }
+    constraints.updateXYFlow()
+
+    const updated = store.edgeAfterDrag('a-b').data
+    const endpoints = {
+      source: { center: { x: 50, y: 30 }, node: { x: 0, y: 0, width: 100, height: 60 } },
+      target: { center: { x: 350, y: 30 }, node: target },
+    }
+    const path = updated.controlPoints
+      ? editedEdgePath({ ...endpoints, controlPoints: updated.controlPoints, routing: 'spline' })
+      : layoutedEdgePath({ ...endpoints, points: updated.points, routing: 'spline' })
+
+    expect(path.d).toMatch(/^M\s*106,\d+/)
+    expect(path.d).toMatch(/294,\d+$/)
+    expect(updated.points.every(([, y]) => y === 30)).toBe(true)
+    expect(updated.labelBBox).toMatchObject({ y: 22 })
+  })
+
+  it('moves each end of the edge with its node when selected nodes move by different amounts', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [[100, 25], [130, 25], [170, 225], [200, 225]],
+        controlPoints: null,
+        labelBBox: null,
+      },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('b')!.positionAbsolute = { x: 200, y: 0 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points.0', [100, 25])
+    expect(changes?.[0]).toHaveProperty('item.data.points.3', [200, 25])
+  })
+
+  it('keeps the target end in place when only the selected source moves', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: { points: [[100, 25], [130, 25], [170, 225], [200, 225]], controlPoints: null, labelBBox: null },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('a')!.positionAbsolute = { x: 40, y: 0 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points.0', [140, 25])
+    expect(changes?.[0]).toHaveProperty('item.data.points.3', [200, 225])
+  })
+
+  it('translates the full edge when both selected nodes move together', () => {
+    const edge: MockEdge = {
+      id: 'a-b',
+      source: 'a',
+      target: 'b',
+      data: { points: [[100, 25], [130, 25], [170, 225], [200, 225]], controlPoints: null, labelBBox: null },
+    }
+    const { store, triggerEdgeChanges } = mockStore([
+      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
+      { id: 'b', x: 200, y: 200, width: 100, height: 50 },
+    ], [edge])
+    const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
+
+    constraints.rects.get('a')!.positionAbsolute = { x: 40, y: 10 }
+    constraints.rects.get('b')!.positionAbsolute = { x: 240, y: 210 }
+    constraints.updateXYFlow()
+
+    const changes = triggerEdgeChanges.mock.lastCall?.[0]
+    expect(changes).toHaveLength(1)
+    expect(changes?.[0]).toHaveProperty('item.data.points', [[140, 35], [170, 35], [210, 235], [240, 235]])
   })
 })
